@@ -1,0 +1,38 @@
+version: '3.6'
+
+services:
+  # Backend API
+  smart-brain-api:
+    container_name: backend
+    build: ./
+    command: npm start
+    working_dir: /usr/src/smart-brain-api
+    environment:
+      POSTGRES_URL: postgres://ztm:password@db:5432/smart-brain-docker
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/src/smart-brain-api
+    depends_on:
+      - db
+      - redis
+
+  # Postgres
+  db:
+    container_name: db
+    build: ./postgres
+    environment:
+      POSTGRES_USER: ztm
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smart-brain-docker
+      POSTGRES_HOST: db
+      POSTGRES_URL: postgres://admin:password@localhost:5432/smart-brain-docker
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - '6389:6379'
